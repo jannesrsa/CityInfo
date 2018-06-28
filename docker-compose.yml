@@ -5,4 +5,4 @@ services:
     image: ${DOCKER_REGISTRY}cityinfoapi
     build:
       context: .
-      dockerfile: CityInfo.API/Dockerfile
+      dockerfile: src/CityInfo.API/Dockerfile
