@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  cityinfo.api:
+    image: ${DOCKER_REGISTRY}cityinfoapi
+    build:
+      context: .
+      dockerfile: CityInfo.API/Dockerfile
