@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CityInfo.API.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers
@@ -120,16 +121,46 @@ namespace CityInfo.API.Controllers
 
             return NoContent();
         }
-        // POST: api/PointsOfInterest
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
 
-        // PUT: api/PointsOfInterest/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPatch("{cityId}/pointsofinterest/{id}")]
+        public IActionResult PartialUpdatePointOfInterest(int cityId, int id,
+            [FromBody] JsonPatchDocument<PointOfInterestForUpdateDto> patchDoc)
         {
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+
+            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+            if (city == null)
+            {
+                return NotFound();
+            }
+
+            var currentPointOfInterest = city.PointsOfInterest.FirstOrDefault(c => c.Id == id);
+            if (currentPointOfInterest == null)
+            {
+                return NotFound();
+            }
+
+            var pointOfInterestToPatch = new PointOfInterestForUpdateDto
+            {
+                Name = currentPointOfInterest.Name,
+                Description = currentPointOfInterest.Description
+            };
+
+            patchDoc.ApplyTo(pointOfInterestToPatch,ModelState);
+            TryValidateModel(pointOfInterestToPatch);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            currentPointOfInterest.Name = pointOfInterestToPatch.Name;
+            currentPointOfInterest.Description = pointOfInterestToPatch.Description;
+
+            return NoContent();
         }
 
         // DELETE: api/ApiWithActions/5
