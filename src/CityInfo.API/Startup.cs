@@ -1,7 +1,9 @@
-﻿using CityInfo.API.Services;
+﻿using CityInfo.API.Entities;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,12 +13,12 @@ namespace CityInfo.API
 {
     public class Startup
     {
-        public static IConfiguration Configuration { get; private set; }
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
+
+        public static IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -52,6 +54,9 @@ namespace CityInfo.API
                     new XmlDataContractSerializerOutputFormatter()));
 
             services.AddTransient<IMailService>(i => new LocalMailService());
+
+            var connectionString = @"Server=(localdb)\mssqllocaldb;Database=CityInfoDB;Trusted_Connection=True;";
+            services.AddDbContext<CityInfoContext>(i => i.UseSqlServer(connectionString));
 
             //.AddJsonOptions(o =>
             //{

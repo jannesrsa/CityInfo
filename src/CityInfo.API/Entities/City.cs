@@ -29,6 +29,6 @@ namespace CityInfo.API.Entities
             set;
         }
 
-        public ICollection<PointOfInterest> PointsOfInterest { get; } = new List<PointOfInterest>();
+        public ICollection<PointOfInterest> PointsOfInterest { get; set; } = new List<PointOfInterest>();
     }
 }
