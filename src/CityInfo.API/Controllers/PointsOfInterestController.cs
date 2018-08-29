@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CityInfo.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,8 @@ namespace CityInfo.API.Controllers
     [ApiController]
     public class PointsOfInterestController : Controller
     {
+        const string GetName = "GetPointOfInterest";
+
         [HttpGet("{cityId}/pointsofinterest")]
         public IActionResult Get(int cityId)
         {
@@ -25,7 +28,7 @@ namespace CityInfo.API.Controllers
             return Ok(city.PointsOfInterest);
         }
 
-        [HttpGet("{cityId}/pointsofinterest/{id}")]
+        [HttpGet("{cityId}/pointsofinterest/{id}", Name = GetName)]
         public IActionResult Get(int cityid, int id)
         {
             var pointOfInterest = CitiesDataStore.Current.Cities
@@ -38,6 +41,38 @@ namespace CityInfo.API.Controllers
             }
 
             return Ok(pointOfInterest);
+        }
+
+        [HttpPost("{cityId}/pointsofinterest")]
+        public IActionResult CreatePointOfInterest(int cityId, [FromBody] PointOfInterestForCreationDto pointOfInterest)
+        {
+            if (pointOfInterest == null)
+            {
+                return BadRequest();
+            }
+
+            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+            if (city == null)
+            {
+                return NotFound();
+            }
+
+            var maxpointofinterestid = CitiesDataStore.Current.Cities
+                .SelectMany(c => c.PointsOfInterest)
+                .Max(p => p.Id) + 1;
+
+            var finalPointOfInterest = new PointOfInterestDto
+            {
+                Id = maxpointofinterestid,
+                Name = pointOfInterest.Name,
+                Description = pointOfInterest.Description
+            };
+
+            city.PointsOfInterest.Add(finalPointOfInterest);
+
+            return CreatedAtRoute(GetName,
+                new { cityId, finalPointOfInterest.Id },
+                finalPointOfInterest);
         }
 
         // POST: api/PointsOfInterest
