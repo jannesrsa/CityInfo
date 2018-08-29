@@ -4,7 +4,7 @@ namespace CityInfo.API.Models
 {
     public class PointOfInterestForCreationDto
     {
-        [Required(ErrorMessage ="Supply an ID")]
+        [Required(ErrorMessage = "Supply an ID")]
         [MaxLength(50)]
         public string Name { get; set; }
 

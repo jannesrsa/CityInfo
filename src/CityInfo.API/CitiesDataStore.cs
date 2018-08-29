@@ -1,8 +1,5 @@
-﻿using CityInfo.API.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using CityInfo.API.Models;
 
 namespace CityInfo.API
 {
@@ -68,7 +65,6 @@ namespace CityInfo.API
                      }
                 }
             };
-
         }
     }
 }
