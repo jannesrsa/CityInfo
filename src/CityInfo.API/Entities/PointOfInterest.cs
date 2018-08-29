@@ -21,6 +21,13 @@ namespace CityInfo.API.Entities
             set;
         }
 
+        [MaxLength(200)]
+        public string Description
+        {
+            get;
+            set;
+        }
+
         [ForeignKey("CityId")]
         public City City
         {
