@@ -90,7 +90,7 @@ namespace CityInfo.API.Controllers
             if (city == null)
             {
                 _logger.LogInformation($"City with id {cityId} wasn't foun when access POI");
-
+                _logger.LogCritical("Test");
                 return NotFound();
             }
 
