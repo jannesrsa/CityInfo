@@ -41,12 +41,12 @@ namespace CityInfo.API
 
             app.UseMvc();
 
-            //Mapper.Initialize(cfg =>
-            //{
-            //    cfg.CreateMap<City, CityWithoutPointsOfInterestDto>();
-            //    cfg.CreateMap<City, CityDto>();
-            //    cfg.CreateMap<PointOfInterest, PointOfInterestDto>();
-            //});
+            Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<City, CityWithoutPointsOfInterestDto>();
+                cfg.CreateMap<City, CityDto>();
+                cfg.CreateMap<PointOfInterest, PointOfInterestDto>();
+            });
 
             //app.Run(async (context) =>
             //{
