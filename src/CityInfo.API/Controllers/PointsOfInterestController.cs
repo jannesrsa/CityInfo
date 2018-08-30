@@ -177,20 +177,23 @@ namespace CityInfo.API.Controllers
                 return BadRequest();
             }
 
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+            if (!_repository.CityExists(cityId))
             {
-                return NotFound();
+                return NotFound("City");
             }
 
-            var currentPointOfInterest = city.PointsOfInterest.FirstOrDefault(c => c.Id == id);
+            var currentPointOfInterest = _repository.GetPointOfInterestForCity(cityId, id);
             if (currentPointOfInterest == null)
             {
                 return NotFound();
             }
 
-            currentPointOfInterest.Name = pointOfInterest.Name;
-            currentPointOfInterest.Description = pointOfInterest.Description;
+            Mapper.Map(pointOfInterest, currentPointOfInterest);
+
+            if (!_repository.Save())
+            {
+                return StatusCode(500);
+            }
 
             return NoContent();
         }
