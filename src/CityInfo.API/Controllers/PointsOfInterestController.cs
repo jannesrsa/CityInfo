@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 using CityInfo.API.Entities;
 using CityInfo.API.Models;
@@ -69,19 +68,24 @@ namespace CityInfo.API.Controllers
         [HttpDelete("{cityId}/pointsofinterest/{id}")]
         public IActionResult Delete(int cityId, int id)
         {
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+            if (!_repository.CityExists(cityId))
             {
                 return NotFound();
             }
 
-            var currentPointOfInterest = city.PointsOfInterest.FirstOrDefault(c => c.Id == id);
+            var currentPointOfInterest = _repository.GetPointOfInterestForCity(cityId, id);
             if (currentPointOfInterest == null)
             {
                 return NotFound();
             }
 
-            city.PointsOfInterest.Remove(currentPointOfInterest);
+            _repository.DeletePointOfInterest(currentPointOfInterest);
+
+            if (!_repository.Save())
+            {
+                return StatusCode(500, "Error");
+            }
+
             _mailService.Send("Deleted POI", $"Deleted POI is {currentPointOfInterest.Name}");
             _logger.LogCritical($"Deleted POI is {currentPointOfInterest.Name}");
             return NoContent();
@@ -127,23 +131,18 @@ namespace CityInfo.API.Controllers
                 return BadRequest();
             }
 
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+            if (!_repository.CityExists(cityId))
             {
                 return NotFound();
             }
 
-            var currentPointOfInterest = city.PointsOfInterest.FirstOrDefault(c => c.Id == id);
+            var currentPointOfInterest = _repository.GetPointOfInterestForCity(cityId, id);
             if (currentPointOfInterest == null)
             {
                 return NotFound();
             }
 
-            var pointOfInterestToPatch = new PointOfInterestForUpdateDto
-            {
-                Name = currentPointOfInterest.Name,
-                Description = currentPointOfInterest.Description
-            };
+            var pointOfInterestToPatch = Mapper.Map<PointOfInterestForUpdateDto>(currentPointOfInterest);
 
             patchDoc.ApplyTo(pointOfInterestToPatch, ModelState);
             TryValidateModel(pointOfInterestToPatch);
@@ -153,8 +152,12 @@ namespace CityInfo.API.Controllers
                 return BadRequest();
             }
 
-            currentPointOfInterest.Name = pointOfInterestToPatch.Name;
-            currentPointOfInterest.Description = pointOfInterestToPatch.Description;
+            Mapper.Map(pointOfInterestToPatch, currentPointOfInterest);
+
+            if (!_repository.Save())
+            {
+                return StatusCode(500);
+            }
 
             return NoContent();
         }
