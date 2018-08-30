@@ -57,6 +57,7 @@ namespace CityInfo.API
 
             var connectionString = Configuration["connectionStrings:cityInfoDBConnectionString"];
             services.AddDbContext<CityInfoContext>(i => i.UseSqlServer(connectionString));
+            services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 
             //.AddJsonOptions(o =>
             //{
