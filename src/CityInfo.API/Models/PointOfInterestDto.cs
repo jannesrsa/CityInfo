@@ -6,16 +6,16 @@
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public static PointOfInterestDto CreateFromPointOfInterest(Entities.PointOfInterest poi)
-        {
-            var returnPoi = new PointOfInterestDto
-            {
-                Id = poi.Id,
-                Description = poi.Description,
-                Name = poi.Name
-            };
+        //public static PointOfInterestDto CreateFromPointOfInterest(Entities.PointOfInterest poi)
+        //{
+        //    var returnPoi = new PointOfInterestDto
+        //    {
+        //        Id = poi.Id,
+        //        Description = poi.Description,
+        //        Name = poi.Name
+        //    };
 
-            return returnPoi;
-        }
+        //    return returnPoi;
+        //}
     }
 }
